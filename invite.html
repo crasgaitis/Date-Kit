@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Date Invitation</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Work+Sans&display=swap" rel="stylesheet">
+  </head>
+  <body>
+    <div class = "bground">
+<ul>
+  <li style = "float: right; font-style: italic; margin-right: 2vw"><a href="index.html" >Date Kit</a></li>
+  <li style = "margin-left: 2vw"><a href="plan.html">Planner</a></li>
+  <li style = "margin-left: 2vw"><a href="invite.html">Invitation</a></li>
+  <li style = "margin-left: 2vw"><a href="save.html">Diary</a></li>
+</ul>
+<h2 style = "margin-top: 50px">Date Invitations</h2><br/>
+<div class="section">
+			<textarea id="invite" textarea name="invite" placeholder="Roses are red, violets are blue..." spellcheck="true" style = "width: 60vw; margin-left: 20vw;"></textarea>
+
+			<p style = "text-align: center; margin-top: 30px">	<button class="button" id="save invite" button onclick="save_invite()" style = "font-size: 20px; display: block; margin: 0 auto;">
+					download</button></p>
+
+		</div>
+
+<script>
+  	function save_invite() {
+				var text = document.getElementById("invite")
+					.value;
+				text = text.replace(/\n/g, "\r\n");
+				var blob = new Blob([text], { type: "text/plain" });
+				var anchor = document.createElement("a");
+				anchor.download = "date-invite.txt";
+				anchor.href = window.URL.createObjectURL(blob);
+				anchor.target = "_blank";
+				anchor.style.display = "none";
+				document.body.appendChild(anchor);
+				anchor.click();
+				document.body.removeChild(anchor);
+			}
+    </script>
+  </body>
+</html>

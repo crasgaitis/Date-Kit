@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Date Diary</title>
+    <link href="style.css" rel="stylesheet" type="text/css" />
+
+<style>
+  * {
+    font-size: inherit;
+    font-family: 'Heebo', sans-serif;
+    font-weight: normal;
+    color: #666;
+    outline: 0;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    border-collapse: collapse;
+    box-sizing: border-box;
+    resize: none;
+}
+#body {
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+
+    padding-top: 40px;
+    min-height: 24em;
+
+    background: #F6F6F6;
+}
+
+#body h1 {
+    font-size: 32px;
+    color: #333;
+    font-weight: bold;
+}
+.savedNote {
+    margin: 20px 0 20px 0;
+
+    padding: 20px;
+    border-radius: 8px;
+    background: #E8DFEB;
+    box-shadow: #efefef 0 4px 8px;
+}
+.savedNoteTitle {
+    font-size: 21px;
+    color: #333;
+    font-weight: bold;
+}
+
+.greenButton {
+    margin: 20px 0 20px 0;
+    background: rgb(255, 182, 193, 0.5);
+    border: 5px solid rgb(255, 182, 193, 0.5);
+    padding: 15px 25px 15px 25px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    font-weight: bold;
+    font-size: 15px;
+    text-align: centered;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s all;
+}
+.greenButton:hover {
+      border: 5px solid white;
+      background-color: black;
+}
+.noteTitle {
+    margin-top: 10px;   
+
+    width: 100%;
+    border: #E0E0E0 1px solid;
+    border-radius: 8px;
+    padding: 10px 20px 10px 20px;
+}
+.noteBody {
+    margin-top: 10px;
+
+    width: 100%;
+    border: #E0E0E0 1px solid;
+    border-radius: 8px;
+    padding: 10px 20px 10px 20px;
+    min-height: 100px;
+}
+.cancelButton {
+    margin-left: 20px;
+    color: #999;
+    cursor: pointer;
+}
+.noteCreator {
+    transition: 0.2s all;
+}
+.show {
+    opacity: 1;
+    transition: opacity 500ms;
+}
+.hide {
+    opacity: 0;
+    transition: opacity 100ms;
+}
+.deleteButton {
+    font-size: 9px;
+    font-weight: bold;
+    border: 1px #634E69 solid;
+    padding: 5px 10px 5px 10px;
+    margin-top: 17px;
+    text-transform: uppercase;
+    color: #634E69;
+    border-radius: 100px;
+    display: inline-block;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.2s all;
+}
+
+.deleteButton:hover{
+  color: white;
+  background-color: #BDACC2
+}
+
+#diary{
+  max-width: 60vw; margin-left: 20vw
+}
+
+textarea{
+  font-size: 15px; opacity: 0.9
+}
+</style>
+
+  </head>
+  <body style = "overflow-x: hidden !important">
+    <div class = "bground">
+      <ul>
+  <li style = "float: right; font-style: italic; margin-right: 2vw"><a href="index.html" >Date Kit</a></li>
+  <li style = "margin-left: 2vw"><a href="plan.html">Planner</a></li>
+  <li style = "margin-left: 2vw"><a href="invite.html">Invitation</a></li>
+  <li style = "margin-left: 2vw"><a href="save.html">Diary</a></li>
+</ul><br/>
+<h2>Date Diary</h2><br/>
+<section id = "diary">
+<p style = "text-align: center"><button class="createButton greenButton">New Date</button></p>
+        <div class="createdNotes"></div>
+
+        <div class="noteCreator hide">
+            <input class="noteTitle" type="text" placeholder="Date-time" />
+            <textarea class="noteBody" placeholder="Details"></textarea>
+
+            <button class="saveButton  greenButton">Add</button>
+            <button class="cancelButton">Cancel</button>
+        </div>
+    </div>
+</section>
+
+
+<script>
+  const createButton = document.querySelector('.createButton');
+const noteCreator = document.querySelector('.noteCreator');
+
+const noteTitle = document.querySelector('.noteTitle');
+const noteBody = document.querySelector('.noteBody');
+const saveButton = document.querySelector('.saveButton');
+const cancelButton = document.querySelector('.cancelButton');
+
+const createdNotes = document.querySelector('.createdNotes');
+const savedNotesDB = [];
+
+let idCounter = -1;
+let i = -1;
+
+//Fade in, fade out
+function fadeIn(el){
+    el.classList.add('show');
+    el.classList.remove('hide');  
+}
+function fadeOut(el){
+    el.classList.add('hide');
+    el.classList.remove('show');  
+}
+
+createButton.addEventListener('click', () => {
+    if ( noteCreator.className.indexOf('hide') !== -1 ) {
+        fadeIn(noteCreator);
+    } else {
+        fadeOut(noteCreator);
+    }
+});
+
+cancelButton.addEventListener('click', () => {
+    noteTitle.value = '';
+    noteBody.value = '';
+    fadeOut(noteCreator);
+});
+
+function resetEditor() {
+    noteTitle.value = '';
+    noteBody.value = '';
+    fadeOut(noteCreator);
+}
+
+function printObject(elementToCreate, className, dbContent, placeLocation) {
+    let printBody = document.createElement(elementToCreate);
+    printBody.className = className;
+    printBody.innerHTML = dbContent;
+    if ( printBody.className === 'savedNote' ) {
+        idCounter += 1;
+        i += 1;
+        printBody.id = 'n' + idCounter;
+    };
+    document.querySelector(placeLocation).appendChild(printBody);            
+};
+
+
+saveButton.addEventListener('click', () => {
+    let noteContent = {
+        title: '',
+        body: ''
+    }
+
+    noteContent.title = noteTitle.value;
+    noteContent.body = noteBody.value;
+    savedNotesDB.push(noteContent);
+
+    if ( noteContent.title !== '' || noteContent.body !== '' ) {
+        printObject('div', 'savedNote', '', '.createdNotes');
+        printObject('h2', 'savedNoteTitle', savedNotesDB[i].title, '.savedNote:last-child');
+        printObject('p', 'savedNoteBody', savedNotesDB[i].body, '.savedNote:last-child');
+
+        let printDelete = document.createElement('a');
+        printDelete.innerHTML = 'Delete';
+        printDelete.className = 'deleteButton';
+        printDelete.onclick = function () {
+            let childToDelete = document.getElementById('n' + idCounter );
+            createdNotes.removeChild(childToDelete);
+            idCounter -= 1;
+        };
+        document.querySelector('.savedNote:last-child').appendChild(printDelete);
+
+        resetEditor();
+    } else {
+        resetEditor();
+        savedNotesDB.pop();
+    }
+});
+</script>
+
+  </body>
+</html>
+
+<!--code adaptations, couresty of https://codepen.io/hazics--!>
